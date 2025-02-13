@@ -1,42 +1,41 @@
 CREATE TABLE "users" (
-  "id" UUID PRIMARY KEY,
+  "id" UUID PRIMARY KEY DEFAULT(gen_random_uuid()),
   "username" varchar(30) UNIQUE NOT NULL,
   "first_name" varchar(50) NOT NULL,
   "last_name" varchar(50) NOT NULL,
-  "password" varchar(50) NOT NULL,
-  "role" int NOT NULL,
-  "created_at" timestamp NOT NULL DEFAULT(now()),
-  "updated_at" timestamp NOT NULL NOT NULL DEFAULT(now()),
-  "password_updated_at" timestamp NOT NULL NOT NULL DEFAULT(now())
-
+  "hashed_password" varchar(50) NOT NULL,
+  "user_role" int NOT NULL,
+  "created_at" timestampz NOT NULL DEFAULT(now()),
+  "updated_at" timestampz NOT NULL NOT NULL DEFAULT(now()),
+  "password_updated_at" timestampz NOT NULL NOT NULL DEFAULT(now())
 );
 
 CREATE TABLE "tickets" (
-  "id" UUID PRIMARY KEY,
+  "id" bigserial PRIMARY KEY,
   "user_id" UUID NOT NULL,
   "assigned_to" UUID,
   "description" TEXT NOT NULL,
   "status" int NOT NULL DEFAULT(0),
   "priority" int NOT NULL DEFAULT(0),
   "category_id" UUID,
-  "updated_at" timestamp NOT NULL DEFAULT(now()),
-  "created_at" timestamp NOT NULL DEFAULT(now())
+  "updated_at" timestampz NOT NULL DEFAULT(now()),
+  "created_at" timestampz NOT NULL DEFAULT(now())
 );
 
 CREATE TABLE "comments" (
-  "id" UUID UNIQUE PRIMARY KEY,
+  "id" bigserial PRIMARY KEY,
   "user_id" UUID NOT NULL,
-  "ticket_id" UUID NOT NULL,
-  "comments" TEXT,
+  "ticket_id" bigserial NOT NULL,
+  "comments" TEXT NOT NULL,
   "customer_visible" bool NOT NULL,
-  "created_at" timestamp NOT NULL DEFAULT(now()),
-  "updated_at" timestamp NOT NULL DEFAULT(now())
+  "created_at" timestampz NOT NULL DEFAULT(now()),
+  "updated_at" timestampz NOT NULL DEFAULT(now())
 );
 
 CREATE TABLE "caterogies" (
-  "id" UUID UNIQUE PRIMARY KEY,
-  "category" varchar(60),
-  "created_at" timestamp NOT NULL DEFAULT(now())
+  "id" smallserial PRIMARY KEY,
+  "category" varchar(60) NOT NULL,
+  "created_at" timestampz NOT NULL DEFAULT(now())
 );
 
 ALTER TABLE "tickets" ADD FOREIGN KEY ("user_id") REFERENCES "users" ("id");

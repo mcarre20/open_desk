@@ -13,3 +13,7 @@ db_migrate_up:
 
 db_migrate_down:
 	migrate -path ./db/migration -database $(db_url) down
+
+server:
+	go run main.go
+
