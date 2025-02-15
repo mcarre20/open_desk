@@ -19,7 +19,7 @@ Returning id, category, created_at
 `
 
 func (q *Queries) CreateCategory(ctx context.Context, category string) (Caterogy, error) {
-	row := q.db.QueryRow(ctx, createCategory, category)
+	row := q.db.QueryRowContext(ctx, createCategory, category)
 	var i Caterogy
 	err := row.Scan(&i.ID, &i.Category, &i.CreatedAt)
 	return i, err
@@ -30,7 +30,7 @@ Select id, category, created_at From caterogies
 `
 
 func (q *Queries) GetAllCategories(ctx context.Context) ([]Caterogy, error) {
-	rows, err := q.db.Query(ctx, getAllCategories)
+	rows, err := q.db.QueryContext(ctx, getAllCategories)
 	if err != nil {
 		return nil, err
 	}
@@ -42,6 +42,9 @@ func (q *Queries) GetAllCategories(ctx context.Context) ([]Caterogy, error) {
 			return nil, err
 		}
 		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
 	}
 	if err := rows.Err(); err != nil {
 		return nil, err
@@ -63,7 +66,7 @@ type UpdateCategoryParams struct {
 }
 
 func (q *Queries) UpdateCategory(ctx context.Context, arg UpdateCategoryParams) (Caterogy, error) {
-	row := q.db.QueryRow(ctx, updateCategory, arg.ID, arg.Category)
+	row := q.db.QueryRowContext(ctx, updateCategory, arg.ID, arg.Category)
 	var i Caterogy
 	err := row.Scan(&i.ID, &i.Category, &i.CreatedAt)
 	return i, err

@@ -31,7 +31,7 @@ type CreateCommentParams struct {
 }
 
 func (q *Queries) CreateComment(ctx context.Context, arg CreateCommentParams) (Comment, error) {
-	row := q.db.QueryRow(ctx, createComment,
+	row := q.db.QueryRowContext(ctx, createComment,
 		arg.UserID,
 		arg.TicketID,
 		arg.Comments,
@@ -57,7 +57,7 @@ Limit 1
 `
 
 func (q *Queries) GetComment(ctx context.Context, id int64) (Comment, error) {
-	row := q.db.QueryRow(ctx, getComment, id)
+	row := q.db.QueryRowContext(ctx, getComment, id)
 	var i Comment
 	err := row.Scan(
 		&i.ID,
@@ -85,7 +85,7 @@ type GetTicketCommentsParams struct {
 }
 
 func (q *Queries) GetTicketComments(ctx context.Context, arg GetTicketCommentsParams) ([]Comment, error) {
-	rows, err := q.db.Query(ctx, getTicketComments, arg.TicketID, arg.Limit, arg.Offset)
+	rows, err := q.db.QueryContext(ctx, getTicketComments, arg.TicketID, arg.Limit, arg.Offset)
 	if err != nil {
 		return nil, err
 	}
@@ -105,6 +105,9 @@ func (q *Queries) GetTicketComments(ctx context.Context, arg GetTicketCommentsPa
 			return nil, err
 		}
 		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
 	}
 	if err := rows.Err(); err != nil {
 		return nil, err
@@ -129,7 +132,7 @@ type UpdateCommentParams struct {
 }
 
 func (q *Queries) UpdateComment(ctx context.Context, arg UpdateCommentParams) (Comment, error) {
-	row := q.db.QueryRow(ctx, updateComment, arg.ID, arg.Comments, arg.CustomerVisible)
+	row := q.db.QueryRowContext(ctx, updateComment, arg.ID, arg.Comments, arg.CustomerVisible)
 	var i Comment
 	err := row.Scan(
 		&i.ID,

@@ -33,7 +33,7 @@ type CreateUserParams struct {
 }
 
 func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) (User, error) {
-	row := q.db.QueryRow(ctx, createUser,
+	row := q.db.QueryRowContext(ctx, createUser,
 		arg.Username,
 		arg.FirstName,
 		arg.LastName,
@@ -61,7 +61,7 @@ Where id = $1 Limit 1
 `
 
 func (q *Queries) GetUser(ctx context.Context, id uuid.UUID) (User, error) {
-	row := q.db.QueryRow(ctx, getUser, id)
+	row := q.db.QueryRowContext(ctx, getUser, id)
 	var i User
 	err := row.Scan(
 		&i.ID,
@@ -90,7 +90,7 @@ type GetUserListParams struct {
 }
 
 func (q *Queries) GetUserList(ctx context.Context, arg GetUserListParams) ([]User, error) {
-	rows, err := q.db.Query(ctx, getUserList, arg.Limit, arg.Offset)
+	rows, err := q.db.QueryContext(ctx, getUserList, arg.Limit, arg.Offset)
 	if err != nil {
 		return nil, err
 	}
@@ -112,6 +112,9 @@ func (q *Queries) GetUserList(ctx context.Context, arg GetUserListParams) ([]Use
 			return nil, err
 		}
 		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
 	}
 	if err := rows.Err(); err != nil {
 		return nil, err
@@ -138,7 +141,7 @@ type UpdateUserInfoParams struct {
 }
 
 func (q *Queries) UpdateUserInfo(ctx context.Context, arg UpdateUserInfoParams) (User, error) {
-	row := q.db.QueryRow(ctx, updateUserInfo,
+	row := q.db.QueryRowContext(ctx, updateUserInfo,
 		arg.ID,
 		arg.FirstName,
 		arg.LastName,
@@ -174,7 +177,7 @@ type UpdateUserPasswordParams struct {
 }
 
 func (q *Queries) UpdateUserPassword(ctx context.Context, arg UpdateUserPasswordParams) (User, error) {
-	row := q.db.QueryRow(ctx, updateUserPassword, arg.ID, arg.HashedPassword)
+	row := q.db.QueryRowContext(ctx, updateUserPassword, arg.ID, arg.HashedPassword)
 	var i User
 	err := row.Scan(
 		&i.ID,

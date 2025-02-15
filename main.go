@@ -1,19 +1,32 @@
 package main
 
 import (
-	"net/http"
+	"log"
 
-	"github.com/go-chi/chi/v5"
+	"github.com/mcarre20/open_desk/server"
+	"github.com/mcarre20/open_desk/util"
 )
 
-
 func main(){
-	r :=chi.NewRouter()
 
-	r.Get("/",func(w http.ResponseWriter, r *http.Request){
-		w.Write([]byte("Hello World!"))
-	})
+	//Load app config
+	log.Println("loading config...")
+	config, err := util.LoadConfig("./.env")
+	if err != nil{
+		log.Fatal(err)
+	}
 
-	http.ListenAndServe(":8080",r)
+	//setup server
+	log.Println("setting up server...")
+	s, err :=server.NewServer(config)
+	if err != nil{
+		log.Fatal(err)
+	}
 
+	//start server
+	log.Printf("server starting and listening on Port %v",config.ServerPort)
+	err = s.Start(":"+config.ServerPort)
+	if err != nil {
+		log.Fatal(err)
+	}
 }

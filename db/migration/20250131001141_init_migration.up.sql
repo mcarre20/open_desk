@@ -3,6 +3,7 @@ CREATE TABLE "users" (
   "username" varchar(30) UNIQUE NOT NULL,
   "first_name" varchar(50) NOT NULL,
   "last_name" varchar(50) NOT NULL,
+  "email" varchar(50) NOT NULL,
   "hashed_password" varchar(50) NOT NULL,
   "user_role" int NOT NULL,
   "created_at" timestampz NOT NULL DEFAULT(now()),

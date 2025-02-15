@@ -27,7 +27,7 @@ type CreateTicketParams struct {
 }
 
 func (q *Queries) CreateTicket(ctx context.Context, arg CreateTicketParams) (Ticket, error) {
-	row := q.db.QueryRow(ctx, createTicket, arg.UserID, arg.Description)
+	row := q.db.QueryRowContext(ctx, createTicket, arg.UserID, arg.Description)
 	var i Ticket
 	err := row.Scan(
 		&i.ID,
@@ -49,7 +49,7 @@ Where id = $1 LIMIT 1
 `
 
 func (q *Queries) GetTicket(ctx context.Context, id int64) (Ticket, error) {
-	row := q.db.QueryRow(ctx, getTicket, id)
+	row := q.db.QueryRowContext(ctx, getTicket, id)
 	var i Ticket
 	err := row.Scan(
 		&i.ID,
@@ -77,7 +77,7 @@ type GetTicketListParams struct {
 }
 
 func (q *Queries) GetTicketList(ctx context.Context, arg GetTicketListParams) ([]Ticket, error) {
-	rows, err := q.db.Query(ctx, getTicketList, arg.Limit, arg.Offset)
+	rows, err := q.db.QueryContext(ctx, getTicketList, arg.Limit, arg.Offset)
 	if err != nil {
 		return nil, err
 	}
@@ -99,6 +99,9 @@ func (q *Queries) GetTicketList(ctx context.Context, arg GetTicketListParams) ([
 			return nil, err
 		}
 		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
 	}
 	if err := rows.Err(); err != nil {
 		return nil, err
@@ -127,7 +130,7 @@ type UpdateTicketParams struct {
 }
 
 func (q *Queries) UpdateTicket(ctx context.Context, arg UpdateTicketParams) (Ticket, error) {
-	row := q.db.QueryRow(ctx, updateTicket,
+	row := q.db.QueryRowContext(ctx, updateTicket,
 		arg.ID,
 		arg.AssignedTo,
 		arg.Status,
