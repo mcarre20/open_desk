@@ -3,10 +3,11 @@ Insert Into users(
     username,
     first_name,
     last_name,
+    email,
     hashed_password,
     user_role
 )Values(
-    $1,$2,$3,$4,$5
+    $1,$2,$3,$4,$5,$6
 )
 Returning *;
 

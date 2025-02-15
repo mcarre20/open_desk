@@ -45,8 +45,9 @@ func NewServer(config util.Config) (*Server, error){
 func (server *Server) setupRouter(){
 	r :=chi.NewRouter()
 
-	r.Get("/",func(w http.ResponseWriter, r *http.Request){
-		w.Write([]byte("Hello World!"))
+	//server health
+	r.Get("/healthz",func(w http.ResponseWriter, r *http.Request){
+		w.WriteHeader(http.StatusOK)
 	})
 
 	server.router = r
