@@ -17,6 +17,7 @@ Where id = $1 Limit 1;
 
 -- name: GetUserList :many
 Select * From users
+Where active = TRUEgit
 Order By username
 Limit $1
 OFFSET $2;
@@ -28,6 +29,7 @@ Set
     first_name = $2,
     last_name = $3,
     user_role = $4,
+    email =$5,
     updated_at = now()
 Where id = $1
 Returning *;
@@ -40,5 +42,9 @@ Set
 Where id = $1
 Returning *;
 
--- delete: DeleteUser :exec
-Delete From users Where id = $1;
+-- name: DeactivateUser :exec
+Update users 
+Set
+    active = TRUE,
+    updated_at = now()
+Where id = $1;
