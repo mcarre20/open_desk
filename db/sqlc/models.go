@@ -5,6 +5,7 @@
 package db
 
 import (
+	"database/sql"
 	"time"
 
 	"github.com/google/uuid"
@@ -39,13 +40,15 @@ type Ticket struct {
 }
 
 type User struct {
-	ID                uuid.UUID `json:"id"`
-	Username          string    `json:"username"`
-	FirstName         string    `json:"first_name"`
-	LastName          string    `json:"last_name"`
-	HashedPassword    string    `json:"hashed_password"`
-	UserRole          int32     `json:"user_role"`
-	CreatedAt         time.Time `json:"created_at"`
-	UpdatedAt         time.Time `json:"updated_at"`
-	PasswordUpdatedAt time.Time `json:"password_updated_at"`
+	ID                uuid.UUID    `json:"id"`
+	Username          string       `json:"username"`
+	FirstName         string       `json:"first_name"`
+	LastName          string       `json:"last_name"`
+	Email             string       `json:"email"`
+	HashedPassword    string       `json:"hashed_password"`
+	UserRole          int32        `json:"user_role"`
+	Active            sql.NullBool `json:"active"`
+	CreatedAt         time.Time    `json:"created_at"`
+	UpdatedAt         time.Time    `json:"updated_at"`
+	PasswordUpdatedAt time.Time    `json:"password_updated_at"`
 }

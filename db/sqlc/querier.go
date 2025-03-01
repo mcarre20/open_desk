@@ -15,6 +15,7 @@ type Querier interface {
 	CreateComment(ctx context.Context, arg CreateCommentParams) (Comment, error)
 	CreateTicket(ctx context.Context, arg CreateTicketParams) (Ticket, error)
 	CreateUser(ctx context.Context, arg CreateUserParams) (User, error)
+	DeactivateUser(ctx context.Context, id uuid.UUID) error
 	GetAllCategories(ctx context.Context) ([]Caterogy, error)
 	GetComment(ctx context.Context, id int64) (Comment, error)
 	GetTicket(ctx context.Context, id int64) (Ticket, error)

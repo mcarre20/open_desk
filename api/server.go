@@ -1,8 +1,6 @@
-package server
+package api
 
 import (
-	"database/sql"
-	"fmt"
 	"net/http"
 
 	"github.com/go-chi/chi/v5"
@@ -21,33 +19,34 @@ type Server struct{
 // NewServer function takes in a config strutc that contains server config
 // function creates connection to dabase and setup route
 // and returns pointer to a server struct
-func NewServer(config util.Config) (*Server, error){
-	//connect to database
-	fmt.Println(config.DBurl)
-	d, err := sql.Open("mysql",config.DBurl)
-	if err != nil{
-		return &Server{}, fmt.Errorf("error connecting to database:\n %v",err)
-	}
-	store := db.New(d)
-	
+func NewServer(config util.Config, store *db.Queries) (*Server, error){
 	//config server
 	server := &Server{
 		config: config,
 		store: store,
 	}
-	
 	//load routes
 	server.setupRouter()
-
 	return server,nil
 }
 
 func (server *Server) setupRouter(){
 	r :=chi.NewRouter()
 
-	r.Get("/",func(w http.ResponseWriter, r *http.Request){
-		w.Write([]byte("Hello World!"))
+	//server health
+	r.Get("/healthz",func(w http.ResponseWriter, r *http.Request){
+		w.WriteHeader(http.StatusOK)
 	})
+
+	//users
+	r.Get("/user/{id}",server.GetUserHandler)
+	r.Get("/users",server.GetUserListHandler)
+	r.Post("/user",server.CreateUserHandler)
+	r.Post("/user/{id}",server.UpdateUserHandler)
+	r.Delete("/user/{id}",server.DeactivateUserHandler)
+
+	//tickets
+	
 
 	server.router = r
 

@@ -6,9 +6,10 @@ CREATE TABLE "users" (
   "email" varchar(50) NOT NULL,
   "hashed_password" varchar(50) NOT NULL,
   "user_role" int NOT NULL,
-  "created_at" timestampz NOT NULL DEFAULT(now()),
-  "updated_at" timestampz NOT NULL NOT NULL DEFAULT(now()),
-  "password_updated_at" timestampz NOT NULL NOT NULL DEFAULT(now())
+  "active" bool NULL DEFAULT(FALSE),
+  "created_at" timestamp NOT NULL DEFAULT(now()),
+  "updated_at" timestamp NOT NULL NOT NULL DEFAULT(now()),
+  "password_updated_at" timestamp NOT NULL NOT NULL DEFAULT(now())
 );
 
 CREATE TABLE "tickets" (
@@ -19,8 +20,8 @@ CREATE TABLE "tickets" (
   "status" int NOT NULL DEFAULT(0),
   "priority" int NOT NULL DEFAULT(0),
   "category_id" UUID,
-  "updated_at" timestampz NOT NULL DEFAULT(now()),
-  "created_at" timestampz NOT NULL DEFAULT(now())
+  "updated_at" timestamp NOT NULL DEFAULT(now()),
+  "created_at" timestamp NOT NULL DEFAULT(now())
 );
 
 CREATE TABLE "comments" (
@@ -29,14 +30,14 @@ CREATE TABLE "comments" (
   "ticket_id" bigserial NOT NULL,
   "comments" TEXT NOT NULL,
   "customer_visible" bool NOT NULL,
-  "created_at" timestampz NOT NULL DEFAULT(now()),
-  "updated_at" timestampz NOT NULL DEFAULT(now())
+  "created_at" timestamp NOT NULL DEFAULT(now()),
+  "updated_at" timestamp NOT NULL DEFAULT(now())
 );
 
 CREATE TABLE "caterogies" (
   "id" smallserial PRIMARY KEY,
   "category" varchar(60) NOT NULL,
-  "created_at" timestampz NOT NULL DEFAULT(now())
+  "created_at" timestamp NOT NULL DEFAULT(now())
 );
 
 ALTER TABLE "tickets" ADD FOREIGN KEY ("user_id") REFERENCES "users" ("id");
