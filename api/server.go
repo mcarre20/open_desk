@@ -45,6 +45,9 @@ func (server *Server) setupRouter(){
 	r.Post("/user/{id}",server.UpdateUserHandler)
 	r.Delete("/user/{id}",server.DeactivateUserHandler)
 
+	//tickets
+	
+
 	server.router = r
 
 }
