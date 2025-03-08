@@ -14,25 +14,28 @@ import (
 const createTicket = `-- name: CreateTicket :one
 Insert Into tickets(
     user_id,
+    title,
     description
 )Values(
-    $1,$2
+    $1,$2,$3
 )
-Returning id, user_id, assigned_to, description, status, priority, category_id, updated_at, created_at
+Returning id, user_id, assigned_to, title, description, status, priority, category_id, updated_at, created_at
 `
 
 type CreateTicketParams struct {
 	UserID      uuid.UUID `json:"user_id"`
+	Title       string    `json:"title"`
 	Description string    `json:"description"`
 }
 
 func (q *Queries) CreateTicket(ctx context.Context, arg CreateTicketParams) (Ticket, error) {
-	row := q.db.QueryRowContext(ctx, createTicket, arg.UserID, arg.Description)
+	row := q.db.QueryRowContext(ctx, createTicket, arg.UserID, arg.Title, arg.Description)
 	var i Ticket
 	err := row.Scan(
 		&i.ID,
 		&i.UserID,
 		&i.AssignedTo,
+		&i.Title,
 		&i.Description,
 		&i.Status,
 		&i.Priority,
@@ -44,7 +47,7 @@ func (q *Queries) CreateTicket(ctx context.Context, arg CreateTicketParams) (Tic
 }
 
 const getTicket = `-- name: GetTicket :one
-Select id, user_id, assigned_to, description, status, priority, category_id, updated_at, created_at From tickets
+Select id, user_id, assigned_to, title, description, status, priority, category_id, updated_at, created_at From tickets
 Where id = $1 LIMIT 1
 `
 
@@ -55,6 +58,7 @@ func (q *Queries) GetTicket(ctx context.Context, id int64) (Ticket, error) {
 		&i.ID,
 		&i.UserID,
 		&i.AssignedTo,
+		&i.Title,
 		&i.Description,
 		&i.Status,
 		&i.Priority,
@@ -66,7 +70,7 @@ func (q *Queries) GetTicket(ctx context.Context, id int64) (Ticket, error) {
 }
 
 const getTicketList = `-- name: GetTicketList :many
-Select id, user_id, assigned_to, description, status, priority, category_id, updated_at, created_at From tickets
+Select id, user_id, assigned_to, title, description, status, priority, category_id, updated_at, created_at From tickets
 Limit $1
 Offset $2
 `
@@ -89,6 +93,7 @@ func (q *Queries) GetTicketList(ctx context.Context, arg GetTicketListParams) ([
 			&i.ID,
 			&i.UserID,
 			&i.AssignedTo,
+			&i.Title,
 			&i.Description,
 			&i.Status,
 			&i.Priority,
@@ -118,7 +123,7 @@ Set
     category_id = $5,
     updated_at = Now()
 Where id = $1
-Returning id, user_id, assigned_to, description, status, priority, category_id, updated_at, created_at
+Returning id, user_id, assigned_to, title, description, status, priority, category_id, updated_at, created_at
 `
 
 type UpdateTicketParams struct {
@@ -142,6 +147,7 @@ func (q *Queries) UpdateTicket(ctx context.Context, arg UpdateTicketParams) (Tic
 		&i.ID,
 		&i.UserID,
 		&i.AssignedTo,
+		&i.Title,
 		&i.Description,
 		&i.Status,
 		&i.Priority,

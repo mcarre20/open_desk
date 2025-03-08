@@ -19,7 +19,7 @@ type Querier interface {
 	GetAllCategories(ctx context.Context) ([]Caterogy, error)
 	GetComment(ctx context.Context, id int64) (Comment, error)
 	GetTicket(ctx context.Context, id int64) (Ticket, error)
-	GetTicketComments(ctx context.Context, arg GetTicketCommentsParams) ([]Comment, error)
+	GetTicketComments(ctx context.Context, ticketID int64) ([]Comment, error)
 	GetTicketList(ctx context.Context, arg GetTicketListParams) ([]Ticket, error)
 	GetUser(ctx context.Context, id uuid.UUID) (User, error)
 	GetUserList(ctx context.Context, arg GetUserListParams) ([]User, error)
