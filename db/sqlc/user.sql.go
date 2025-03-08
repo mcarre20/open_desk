@@ -99,7 +99,7 @@ func (q *Queries) GetUser(ctx context.Context, id uuid.UUID) (User, error) {
 
 const getUserList = `-- name: GetUserList :many
 Select id, username, first_name, last_name, email, hashed_password, user_role, active, created_at, updated_at, password_updated_at From users
-Where active = TRUE
+Where active = TRUEgit
 Order By username
 Limit $1
 OFFSET $2

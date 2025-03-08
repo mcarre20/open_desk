@@ -74,18 +74,11 @@ func (q *Queries) GetComment(ctx context.Context, id int64) (Comment, error) {
 const getTicketComments = `-- name: GetTicketComments :many
 Select id, user_id, ticket_id, comments, customer_visible, created_at, updated_at From comments
 Where ticket_id = $1
-Limit $2
-Offset $3
+ORDER BY created_at DESC
 `
 
-type GetTicketCommentsParams struct {
-	TicketID int64 `json:"ticket_id"`
-	Limit    int32 `json:"limit"`
-	Offset   int32 `json:"offset"`
-}
-
-func (q *Queries) GetTicketComments(ctx context.Context, arg GetTicketCommentsParams) ([]Comment, error) {
-	rows, err := q.db.QueryContext(ctx, getTicketComments, arg.TicketID, arg.Limit, arg.Offset)
+func (q *Queries) GetTicketComments(ctx context.Context, ticketID int64) ([]Comment, error) {
+	rows, err := q.db.QueryContext(ctx, getTicketComments, ticketID)
 	if err != nil {
 		return nil, err
 	}

@@ -31,6 +31,7 @@ type Ticket struct {
 	ID          int64     `json:"id"`
 	UserID      uuid.UUID `json:"user_id"`
 	AssignedTo  uuid.UUID `json:"assigned_to"`
+	Title       string    `json:"title"`
 	Description string    `json:"description"`
 	Status      int32     `json:"status"`
 	Priority    int32     `json:"priority"`
