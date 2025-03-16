@@ -8,12 +8,6 @@ db_start:
 db_stop:
 	docker stop open_desk_db
 
-db_migrate_up:
-	migrate -path ./db/migration -database $(db_url) up
-
-db_migrate_down:
-	migrate -path ./db/migration -database $(db_url) down
-
 run_server: 
 	go run main.go
 
