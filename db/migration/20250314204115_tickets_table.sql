@@ -3,6 +3,7 @@ CREATE TABLE "tickets" (
   "id" bigserial PRIMARY KEY,
   "user_id" UUID NOT NULL,
   "assigned_to" UUID,
+  "title" varchar(50) NOT NULL,
   "description" TEXT NOT NULL,
   "status" int NOT NULL DEFAULT(0),
   "priority" int NOT NULL DEFAULT(0),

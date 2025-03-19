@@ -46,6 +46,15 @@ func (server *Server) setupRouter(){
 	r.Delete("/user/{id}",server.DeactivateUserHandler)
 
 	//tickets
+	r.Get("/ticket/{id}",server.GetTicketHandler)
+	r.Get("/tickets",server.GetTicketListHandler)
+	r.Post("/ticket",server.CreateTicketHandler)
+	r.Post("/ticket/{id}",server.UpdateTicketHandler)
+	
+	//comments
+	r.Post("/comment",server.createComment)
+	r.Get("/comments/{id}",server.getTicketComments)
+	r.Post("/comment/{id}",server.udpateComment)
 	
 
 	server.router = r

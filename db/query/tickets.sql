@@ -1,9 +1,10 @@
 -- name: CreateTicket :one
 Insert Into tickets(
     user_id,
+    title,
     description
 )Values(
-    $1,$2
+    $1,$2,$3
 )
 Returning *;
 

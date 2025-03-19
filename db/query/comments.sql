@@ -16,8 +16,7 @@ Limit 1;
 -- name: GetTicketComments :many
 Select * From comments
 Where ticket_id = $1
-Limit $2
-Offset $3;
+ORDER BY created_at DESC;
 
 -- name: UpdateComment :one
 Update comments
@@ -27,4 +26,3 @@ Set
     updated_at = NOW()
 Where id = $1
 Returning *;
-
