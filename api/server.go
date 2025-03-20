@@ -55,6 +55,10 @@ func (server *Server) setupRouter(){
 	r.Post("/comment",server.createComment)
 	r.Get("/comments/{id}",server.getTicketComments)
 	r.Post("/comment/{id}",server.udpateComment)
+
+	//categories
+	r.Post("/categories",server.CreateCategoryHandler)
+	r.Get("/categories",server.GetAllCategoriesHandler)
 	
 
 	server.router = r
