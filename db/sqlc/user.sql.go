@@ -97,6 +97,30 @@ func (q *Queries) GetUser(ctx context.Context, id uuid.UUID) (User, error) {
 	return i, err
 }
 
+const getUserByUserName = `-- name: GetUserByUserName :one
+Select id, username, first_name, last_name, email, hashed_password, user_role, active, created_at, updated_at, password_updated_at From users
+Where username = $1 Limit 1
+`
+
+func (q *Queries) GetUserByUserName(ctx context.Context, username string) (User, error) {
+	row := q.db.QueryRowContext(ctx, getUserByUserName, username)
+	var i User
+	err := row.Scan(
+		&i.ID,
+		&i.Username,
+		&i.FirstName,
+		&i.LastName,
+		&i.Email,
+		&i.HashedPassword,
+		&i.UserRole,
+		&i.Active,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+		&i.PasswordUpdatedAt,
+	)
+	return i, err
+}
+
 const getUserList = `-- name: GetUserList :many
 Select id, username, first_name, last_name, email, hashed_password, user_role, active, created_at, updated_at, password_updated_at From users
 Where active = TRUEgit

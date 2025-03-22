@@ -9,6 +9,7 @@ import (
 	"github.com/google/uuid"
 	db "github.com/mcarre20/open_desk/db/sqlc"
 	"github.com/mcarre20/open_desk/util"
+	"golang.org/x/crypto/bcrypt"
 )
 
 const pageDefaultLimit = 20
@@ -35,24 +36,26 @@ func (server *Server)CreateUserHandler(w http.ResponseWriter,r *http.Request){
 	user := userReq{}
 	err := util.JsonDecode(r.Body,&user)
 	if err != nil{
-		log.Print("error decoding json")
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
-	//to-do hash password before saving in database
-
-	//create user in db
+	//hash password before saving in database
+	hashPassword, err := bcrypt.GenerateFromPassword([]byte(user.Password),14)
+	if err != nil{
+		msg:="error creating user"
+		util.RespondWithError(w,msg,http.StatusInternalServerError)
+		return
+	}
 	dbUser, err := server.store.CreateUser(r.Context(),db.CreateUserParams{
 		Username: user.Username,
 		FirstName: user.FirstName,
 		LastName: user.LastName,
 		Email: user.Email,
-		HashedPassword: user.Password,
+		HashedPassword: string(hashPassword),
 		UserRole: 1,
 	})
 
 	if err != nil{
-		log.Println(err)
 		msg:="error creating user"
 		util.RespondWithError(w,msg,http.StatusInternalServerError)
 		return
@@ -228,7 +231,64 @@ func (server *Server) UpdateUserHandler(w http.ResponseWriter, r *http.Request){
 
 }
 
-func (server *Server) UpdateUserPassword(w http.ResponseWriter, r *http.Request){}
+func (server *Server) UpdateUserPasswordHandler(w http.ResponseWriter, r *http.Request){
+	userId := chi.URLParam(r,"id")
+	userUUID,err := uuid.Parse(userId)
+	if err != nil{
+		msg:= "unrecognized user id"
+		util.RespondWithError(w,msg,http.StatusBadRequest)
+		return
+	}
+	defer r.Body.Close()
+	type userPasswordsReq struct{
+		CurrentPassword string `json:"current_password"`
+		NewPassword string `jsong:"new_password"`
+	}
+	userPasswords := userPasswordsReq{}
+	err = util.JsonDecode(r.Body,&userPasswords)
+	if err != nil{
+		msg := "error reading json"
+		util.RespondWithError(w,msg,http.StatusInternalServerError)
+		return
+	}
+	//get user from database
+	dbuser, err := server.store.GetUser(r.Context(),userUUID)
+	if err != nil{
+		msg := "error reading json"
+		util.RespondWithError(w,msg,http.StatusInternalServerError)
+		return
+	}
+
+	//check if password is valide
+	bcrypt.CompareHashAndPassword([]byte(dbuser.HashedPassword),[]byte(userPasswords.CurrentPassword))
+	if err != nil{
+		msg := "wrong password"
+		util.RespondWithError(w,msg,http.StatusUnauthorized)
+		return
+	}
+	//hash new password
+	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(userPasswords.NewPassword),14)
+	if err != nil{
+		msg := "server error"
+		util.RespondWithError(w,msg,http.StatusInternalServerError)
+		return
+	}
+
+	//update user
+	server.store.UpdateUserPassword(r.Context(),db.UpdateUserPasswordParams{
+		ID: userUUID,
+		HashedPassword: string(hashedPassword),
+	})
+
+	if err != nil {
+		msg := "error udpating user password"
+		util.RespondWithError(w,msg,http.StatusInternalServerError)
+		return
+	}
+
+	//response
+	w.WriteHeader(http.StatusNoContent)
+}
 
 func (server *Server) DeactivateUserHandler(w http.ResponseWriter,r *http.Request){
 	userId := chi.URLParam(r,"id")
