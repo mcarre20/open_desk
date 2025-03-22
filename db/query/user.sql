@@ -15,6 +15,10 @@ Returning *;
 Select * From users
 Where id = $1 Limit 1;
 
+-- name: GetUserByUserName :one
+Select * From users
+Where username = $1 Limit 1;
+
 -- name: GetUserList :many
 Select * From users
 Where active = TRUEgit

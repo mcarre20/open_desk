@@ -9,6 +9,7 @@ import (
 type Config struct{
 	ServerPort string
 	DBurl string
+	JWTSigningKey string
 }
 
 // LoadConfig takes the path of a env file,
@@ -21,6 +22,7 @@ func LoadConfig(path string) (config Config, err error){
 
 	ServerPort := os.Getenv("SERVER_PORT")
 	DBurl := os.Getenv("DB_URL")
+	JWTSigningKey := os.Getenv("JWT_SIGNING_KEY")
 
 
 
@@ -29,5 +31,6 @@ func LoadConfig(path string) (config Config, err error){
 	return Config{
 		ServerPort: ServerPort,
 		DBurl: DBurl,
+		JWTSigningKey: JWTSigningKey,
 	}, nil
 } 

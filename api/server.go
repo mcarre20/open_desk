@@ -33,16 +33,25 @@ func NewServer(config util.Config, store *db.Queries) (*Server, error){
 func (server *Server) setupRouter(){
 	r :=chi.NewRouter()
 
+	//public routes
+	r.Group(func(r chi.Router){
 	//server health
 	r.Get("/healthz",func(w http.ResponseWriter, r *http.Request){
 		w.WriteHeader(http.StatusOK)
 	})
+	//auth
+	r.Post("/login",server.LoginHandler)
+	})
 
+	//protected
+	r.Group(func(r chi.Router){
+	r.Use(server.AuthMiddleWare)
 	//users
 	r.Get("/user/{id}",server.GetUserHandler)
 	r.Get("/users",server.GetUserListHandler)
 	r.Post("/user",server.CreateUserHandler)
 	r.Post("/user/{id}",server.UpdateUserHandler)
+	r.Post("/user/password/{id}",server.UpdateUserPasswordHandler)
 	r.Delete("/user/{id}",server.DeactivateUserHandler)
 
 	//tickets
@@ -59,7 +68,7 @@ func (server *Server) setupRouter(){
 	//categories
 	r.Post("/categories",server.CreateCategoryHandler)
 	r.Get("/categories",server.GetAllCategoriesHandler)
-	
+	})
 
 	server.router = r
 
